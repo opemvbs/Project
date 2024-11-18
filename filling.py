@@ -40,3 +40,6 @@ ppm_moles = {component: percent_moles[component] * 10000 for component in percen
 
 blending_tolerance = {component: round((percent_moles[component] / PERCENT_MOL_TARGET[component] - 1) * 100, 5) for component in PERCENT_MOL_TARGET}
 print(blending_tolerance)
+
+# TODO
+# Make premix database
