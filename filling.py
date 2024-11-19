@@ -11,7 +11,7 @@ COMPONENT = {
 }
 
 molar_masses = {component: formula.mass for component, formula in COMPONENT.items()}
-# print(molar_masses)
+print(molar_masses)
 
 PERCENT_MOL_TARGET = {
     "SULPHUR_DIOXIDE": 0.03002,
@@ -21,10 +21,10 @@ PERCENT_MOL_TARGET = {
 }
 
 WEIGHTS = {
-    "SULPHUR_DIOXIDE": 2.5210,
-    "CARBON_MONOXIDE": 1.2605,
-    "CARBON_DIOXIDE" : 923.0673,
-    "NITROGEN"       : 3082.2259,
+    "SULPHUR_DIOXIDE": 2.641,
+    "CARBON_MONOXIDE": 1.315,
+    "CARBON_DIOXIDE" : 923.0,
+    "NITROGEN"       : 3053.944,
 }
 
 actual_moles = {component: WEIGHTS[component] / COMPONENT[component].mass for component in WEIGHTS}
@@ -40,6 +40,8 @@ ppm_moles = {component: percent_moles[component] * 10000 for component in percen
 
 blending_tolerance = {component: round((percent_moles[component] / PERCENT_MOL_TARGET[component] - 1) * 100, 5) for component in PERCENT_MOL_TARGET}
 print(blending_tolerance)
+
+print(Formula('C2H4O').mass)
 
 # TODO
 # Make premix database
