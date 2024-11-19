@@ -1,0 +1,133 @@
+﻿component_name,brand_name,impurity_name,ppm,mole_fraction,molar_mass
+n-pentane,Air Gas,iso-Pentane,7279,0.7279,72.15
+n-pentane,Air Gas,n-Pentane,992721,99.2721,72.15
+iso-pentane,Air Gas,n-Pentane,4732.2,0.47322,72.15
+iso-pentane,Air Gas,iso-Pentane,995267.8,99.52678,72.15
+n-butane,Huate,Propane,603,0.0603,44.097
+n-butane,Huate,Propylene,283,0.0283,42.081
+n-butane,Huate,iso-Butane,1323,0.1323,58.124
+n-butane,Huate,trans-2-Butene,370,0.037,56.108
+n-butane,Huate,cis-2-Butene,738,0.0738,56.108
+n-butane,Huate,iso-Butylene,14859,1.4859,56.108
+n-butane,Huate,iso-Pentane,10,0.001,72.15
+n-butane,Huate,n-Butane,981814,98.1814,58.124
+iso-butane,Chengdu,iso-pentane,29.1,0.00291,72.15
+iso-butane,Chengdu,iso-butylene,23.3,0.00233,56.108
+iso-butane,Chengdu,Propane,266,0.0266,44.097
+iso-butane,Chengdu,Propylene,63.7,0.00637,42.081
+iso-butane,Chengdu,iso-Butane,999617.9,99.96179,58.124
+propane,China,Cyclopropane,378.9,0.03789,42.08
+propane,China,n-Butane,24.9,0.00249,58.124
+propane,China,iso-Butane,287,0.0287,58.124
+propane,China,Propylene,221.9,0.02219,42.081
+propane,China,Propane,999087.3,99.90873,44.097
+methane,2.5N,N2,273,0.0273,28.013
+methane,2.5N,Methane,999727,99.9727,16.043
+methane,5N,N2,80,0.008,28.013
+methane,5N,Methane,999920,99.992,16.043
+cis-2-Butene,Air Gas,trans-2-Butene,1100,0.11,56.108
+cis-2-Butene,Air Gas,cis-2-Butene,998900,99.89,56.108
+trans-2-Butene,Air Gas,cis-2-Butene,1400,0.14,56.108
+trans-2-Butene,Air Gas,trans-2-Butene,998600,99.86,56.108
+ethane,Research,CO,0.5,0.00005,28.0104
+ethane,Research,CO2,0.5,0.00005,44.011
+ethane,Research,Moisture,0.5,0.00005,18.01528
+ethane,Research,N2,0.1,0.00001,28.013
+ethane,Research,O2,0.1,0.00001,31.9988
+ethane,Research,Other Hydrocarbon,38.2,0.00382,16.043
+ethane,Research,Ethane,999960.1,99.99601,30.07
+ethylene,Air Gas,Ethane,100,0.01,30.07
+ethylene,Air Gas,CO,0.1,0.00001,28.01
+ethylene,Air Gas,CO2,0.1,0.00001,44.01100159
+ethylene,Air Gas,Ethylene,999899.8,99.98998,28.06
+propylene,Air Gas,Propane,900,0.09,44.097
+propylene,Air Gas,n-Butane,10.9,0.00109,58.124
+propylene,Air Gas,iso-butane,38.7,0.00387,58.124
+propylene,Air Gas,CO,0.4468,0.00004468,28.01
+propylene,Air Gas,CO2,1.2369,0.00012369,44.01100159
+propylene,Air Gas,Methane,1.2996,0.00012996,16.043
+propylene,Air Gas,Ethylene,0.6625,0.00006625,28.06
+propylene,Air Gas,Ethane,1.0869,0.00010869,30.07
+propylene,Air Gas,Propylene,999045.6673,99.90456673,42.081
+propane,Research,Ethane,44,0.0044,30.07
+propane,Research,n-Butane,4,0.0004,58.124
+propane,Research,iso-Butane,13,0.0013,58.124
+propane,Research,oxygen,0.3,0.00003,31.9988
+propane,Research,nitrogen,0.5,0.00005,28.013
+propane,Research,hydrogen,0.5,0.00005,2.016
+propane,Research,Propane,999937.7,99.99377,44.097
+vinyl acetylene,China,Acetylene,1900,0.19,26.038
+vinyl acetylene,China,1-Butene,3700,0.37,56.108
+vinyl acetylene,China,"1,3-Butadiene",22,0.0022,54.092
+vinyl acetylene,China,Vinyl Chloride,7900,0.79,62.498
+vinyl acetylene,China,Vinyl Acetylene,986478,98.6478,44.097
+iso-butylene,Isgas,Propane,5.6,0.00056,44.097
+iso-butylene,Isgas,n-Butane,16.4,0.00164,58.124
+iso-butylene,Isgas,iso-Butane,59.3,0.00593,58.124
+iso-butylene,Isgas,1-butene,3.6,0.00036,56.108
+iso-butylene,Isgas,cis-2-Butene,20.8,0.00208,56.108
+iso-butylene,Isgas,"1,3-Butadiene",40.3,0.00403,54.092
+iso-butylene,Isgas,iso-Butylene,999854,99.9854,56.108
+1-butene,Chengdu,H2O,19,0.0019,18.01528
+1-butene,Chengdu,CO2,0.2,0.00002,44.01100159
+1-butene,Chengdu,Isobutene,205,0.0205,56.108
+1-butene,Chengdu,2 butene,205,0.0205,56.106
+1-butene,Chengdu,Propylene,4.5,0.00045,42.081
+1-butene,Chengdu,Iso-Butane,2500,0.25,58.124
+1-butene,Chengdu,n-Butane,270,0.027,58.124
+1-butene,Chengdu,trans-2-Butene,3,0.0003,56.108
+1-butene,Chengdu,"1,3-Butadiene",1000,0.1,54.092
+1-butene,Chengdu,1-Butene,995793.3,99.57933,56.108
+"1,3-butadiene",Chengdu,Iso-Butane,2,0.0002,58.124
+"1,3-butadiene",Chengdu,n-Butane,11,0.0011,58.124
+"1,3-butadiene",Chengdu,Trans-2-Butene,612,0.0612,56.108
+"1,3-butadiene",Chengdu,Cis-2-Butene,339,0.0339,56.108
+"1,3-butadiene",Chengdu,1-Butene,1613,0.1613,56.108
+"1,3-butadiene",Chengdu,Iso-Butylene,180,0.018,56.108
+"1,3-butadiene",Chengdu,n-Hexane,8,0.0008,86.18
+"1,3-butadiene",Chengdu,"1,3-Butadiene",997235,99.7235,54.092
+propylene,Chengdu,Propane,76,0.0076,44.097
+propylene,Chengdu,Propylene,9999924,999.9924,42.081
+ethylene,Efgas,Methane,17,0.0017,16.043
+ethylene,Efgas,Acetylene,2,0.0002,26.038
+ethylene,Efgas,Iso-Butane,2,0.0002,58.124
+ethylene,Efgas,Oxygen,56,0.0056,31.9988
+ethylene,Efgas,Nitrogen,126,0.0126,28.013
+ethylene,Efgas,Hydrogen,3,0.0003,2.016
+ethylene,Efgas,CO,16,0.0016,28.01
+ethylene,Efgas,Ethylene,999778,99.9778,28.06
+"1,3-butadiene",CSI,Iso-Butane + acetylene,8,0.0008,58.124
+"1,3-butadiene",CSI,n-Butane + propadiene,7,0.0007,58.124
+"1,3-butadiene",CSI,Trans-2-Butene,944,0.0944,56.108
+"1,3-butadiene",CSI,1-Butene,238,0.0238,56.108
+"1,3-butadiene",CSI,Iso-Butylene,475,0.0475,56.108
+"1,3-butadiene",CSI,Cis-2-Butene,1428,0.1428,56.108
+"1,3-butadiene",CSI,1-Pentene,3,0.0003,70.134
+"1,3-butadiene",CSI,"1,3-Butadiene",996897,99.6897,54.092
+ethane,Chengdu,Methane,75,0.0075,16.043
+ethane,Chengdu,Ethane,999925,99.9925,30.07
+iso-butylene,3N,iso-Pentane,222,0.0222,72.15
+iso-butylene,3N,iso-Butane,48,0.0048,58.124
+iso-butylene,3N,iso-Butylene,999730,99.973,56.108
+ethane,CSI,Methane,38.5,0.00385,16.043
+ethane,CSI,N2,50,0.005,28.0134
+ethane,CSI,Propane,4575,0.4575,44.097
+ethane,CSI,Ethane,995336.5,99.53365,30.07
+ethylene,4.5N,Ethane,5,0.0005,30.07
+ethylene,4.5N,O2+Ar,0.3,0.00003,31.9988
+ethylene,4.5N,N2,3.7,0.00037,28.013
+ethylene,4.5N,CO,0.25,0.000025,31.9988
+ethylene,4.5N,CO2,0.25,0.000025,44.011002
+ethylene,4.5N,Acetylene,0.25,0.000025,26.038
+ethylene,4.5N,H2O,1.5,0.00015,18.01528
+ethylene,4.5N,Other HC,4,0.0004,16.043
+ethylene,4.5N,Ethylene,999984.75,99.998475,28.06
+carbon monoxide,Air Gas,Methane,1,0.0001,16.043
+carbon monoxide,Air Gas,N2,26.61,0.002661,28.013
+carbon monoxide,Air Gas,CO2,16,0.0016,44.01100159
+carbon monoxide,Air Gas,Oxygen,0.1,0.00001,31.9988
+carbon monoxide,Air Gas,Hydrogen,0.03,0.000003,2.016
+carbon monoxide,Air Gas,CO,999956.26,99.995626,28.01
+iso-butane,Huate,"2,2 Dimethyl Propane",0.002,0.0000002,72.151
+iso-butane,Huate,Propane,0.002,0.0000002,44.097
+iso-butane,Huate,iso-Butane,999960,99.996,58.124
