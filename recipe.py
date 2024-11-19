@@ -6,9 +6,6 @@ GAS_CONSTANT = 0.08314 # L.Bar/mol.g.K
 TEMPERATURE = 295 # K
 Z_MIX = 0.995
 
-
-
-
 COMPONENT = {
     "OXYGEN"    : Formula('O2'),
     "NITROGEN"  : Formula('N2'),
