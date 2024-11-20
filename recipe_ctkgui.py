@@ -2,6 +2,8 @@ import customtkinter as ctk
 from tkinter import ttk, messagebox
 from molmass import Formula
 
+ctk.set_appearance_mode("dark")
+
 # Default constants
 DEFAULT_CYL_VOLUME = 40  # L
 DEFAULT_FILL_PRESSURE = 150  # bar
@@ -49,13 +51,13 @@ def calculate():
         nitrogen_component = component_nitrogen.get()
         
         # Calculate the weight of oxygen and nitrogen
-        oxygen_weight = calculated_weight(oxygen_component, oxygen_percent / 100, volume, pressure, gas_constant, temperature, z_mix)
-        nitrogen_weight = calculated_weight(nitrogen_component, nitrogen_percent / 100, volume, pressure, gas_constant, temperature, z_mix)
+        oxygen_weight = calculated_weight(oxygen_component, oxygen_percent , volume, pressure, gas_constant, temperature, z_mix)
+        nitrogen_weight = calculated_weight(nitrogen_component, nitrogen_percent , volume, pressure, gas_constant, temperature, z_mix)
         
         # Display results
-        label_oxygen_weight.configure(text=f"Oxygen Weight: {oxygen_weight:.2f} g")
-        label_nitrogen_weight.configure(text=f"Nitrogen Weight: {nitrogen_weight:.2f} g")
-        label_total_weight.configure(text=f"Total Weight: {oxygen_weight + nitrogen_weight:.2f} g")
+        label_oxygen_weight.configure(text=f"Oxygen Weight: {oxygen_weight:.4f} g")
+        label_nitrogen_weight.configure(text=f"Nitrogen Weight: {nitrogen_weight:.4f} g")
+        label_total_weight.configure(text=f"Total Weight: {oxygen_weight + nitrogen_weight:.4f} g")
     except ValueError as e:
         messagebox.showerror("Input Error", str(e))
 
@@ -98,13 +100,13 @@ entry_z_mix.grid(row=4, column=1, padx=10, pady=5)
 label_oxygen_percent = ctk.CTkLabel(root, text="Oxygen Percentage (%):")
 label_oxygen_percent.grid(row=5, column=0, padx=10, pady=5)
 entry_oxygen = ctk.CTkEntry(root)
-entry_oxygen.insert(0, "0.8")
+entry_oxygen.insert(0, "0.0008")
 entry_oxygen.grid(row=5, column=1, padx=10, pady=5)
 
 label_nitrogen_percent = ctk.CTkLabel(root, text="Nitrogen Percentage (%):")
 label_nitrogen_percent.grid(row=6, column=0, padx=10, pady=5)
 entry_nitrogen = ctk.CTkEntry(root)
-entry_nitrogen.insert(0, "99.2")
+entry_nitrogen.insert(0, "99.9992")
 entry_nitrogen.grid(row=6, column=1, padx=10, pady=5)
 
 # Create combobox for selecting gas components
@@ -125,13 +127,13 @@ button_calculate = ctk.CTkButton(root, text="Calculate", command=calculate)
 button_calculate.grid(row=9, column=0, columnspan=2, padx=10, pady=10)
 
 # Results Labels
-label_oxygen_weight = ctk.CTkLabel(root, text="Oxygen Weight: 0.00 g")
+label_oxygen_weight = ctk.CTkLabel(root, text="Oxygen Weight: 0.0000 g")
 label_oxygen_weight.grid(row=10, column=0, columnspan=2, padx=10, pady=5)
 
-label_nitrogen_weight = ctk.CTkLabel(root, text="Nitrogen Weight: 0.00 g")
+label_nitrogen_weight = ctk.CTkLabel(root, text="Nitrogen Weight: 0.0000 g")
 label_nitrogen_weight.grid(row=11, column=0, columnspan=2, padx=10, pady=5)
 
-label_total_weight = ctk.CTkLabel(root, text="Total Weight: 0.00 g")
+label_total_weight = ctk.CTkLabel(root, text="Total Weight: 0.0000 g")
 label_total_weight.grid(row=12, column=0, columnspan=2, padx=10, pady=5)
 
 # Start the Tkinter event loop

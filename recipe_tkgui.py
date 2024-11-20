@@ -49,8 +49,8 @@ def calculate():
         nitrogen_component = component_nitrogen.get()
         
         # Calculate the weight of oxygen and nitrogen
-        oxygen_weight = calculated_weight(oxygen_component, oxygen_percent / 100, volume, pressure, gas_constant, temperature, z_mix)
-        nitrogen_weight = calculated_weight(nitrogen_component, nitrogen_percent / 100, volume, pressure, gas_constant, temperature, z_mix)
+        oxygen_weight = calculated_weight(oxygen_component, oxygen_percent, volume, pressure, gas_constant, temperature, z_mix)
+        nitrogen_weight = calculated_weight(nitrogen_component, nitrogen_percent, volume, pressure, gas_constant, temperature, z_mix)
         
         # Display results
         label_oxygen_weight.config(text=f"Oxygen Weight: {oxygen_weight:.2f} g")
