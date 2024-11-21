@@ -11,13 +11,11 @@ DEFAULT_GAS_CONSTANT = 0.08314  # L.Bar/mol.g.K
 DEFAULT_TEMPERATURE = 295  # K
 DEFAULT_Z_MIX = 0.995
 
-# Available gases (can be expanded as needed)
+# Available gases (can be expanded dynamically)
 COMPONENTS = {
     "OXYGEN": 'O2',
     "NITROGEN": 'N2',
-    # You can add more components here
-    "ARGON": 'Ar',
-    "CARBON_DIOXIDE": 'CO2'
+    # More components can be added by the user via the app
 }
 
 # Function to calculate molar mass
@@ -34,7 +32,46 @@ def calculated_weight(component, percent_mol, volume, pressure, constant, temper
     weight = pressure * volume * percent_mol * molar_mass / (z_mix * constant * temperature * 100)
     return weight
 
-# Function to add components dynamically
+# Function to add new components dynamically
+def add_new_component():
+    def submit_new_component():
+        component_name = entry_new_component_name.get().strip().upper()
+        component_formula = entry_new_component_formula.get().strip().upper()
+
+        if not component_name or not component_formula:
+            messagebox.showerror("Input Error", "Both name and formula are required!")
+            return
+
+        # Add the new component to the dictionary
+        COMPONENTS[component_name] = component_formula
+
+        # Refresh the UI by adding entry fields for this new component
+        add_component_widgets(component_name, len(entry_percent_widgets) + 5)
+
+        # Clear the entry fields for new component inputs
+        entry_new_component_name.delete(0, ctk.END)
+        entry_new_component_formula.delete(0, ctk.END)
+
+        messagebox.showinfo("Success", f"Component {component_name} added successfully!")
+
+    # Create the popup window to enter the new component
+    popup = ctk.CTkToplevel(root)
+    popup.title("Add New Component")
+
+    label_name = ctk.CTkLabel(popup, text="Component Name:")
+    label_name.grid(row=0, column=0, padx=10, pady=5)
+    entry_new_component_name = ctk.CTkEntry(popup)
+    entry_new_component_name.grid(row=0, column=1, padx=10, pady=5)
+
+    label_formula = ctk.CTkLabel(popup, text="Component Formula:")
+    label_formula.grid(row=1, column=0, padx=10, pady=5)
+    entry_new_component_formula = ctk.CTkEntry(popup)
+    entry_new_component_formula.grid(row=1, column=1, padx=10, pady=5)
+
+    button_submit = ctk.CTkButton(popup, text="Submit", command=submit_new_component)
+    button_submit.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
+
+# Function to add component widgets dynamically
 def add_component_widgets(component_name, row):
     # Label for component percentage
     label_percent = ctk.CTkLabel(root, text=f"{component_name} Percentage (%):")
@@ -135,24 +172,28 @@ entry_z_mix.grid(row=4, column=1, padx=10, pady=5)
 entry_percent_widgets = {}
 component_combobox_widgets = {}
 
-# Dynamically add components (you can add more by modifying COMPONENTS)
+# Dynamically add initial components (you can add more by clicking "Add Component")
 row = 5
 for component in COMPONENTS:
     add_component_widgets(component, row)
     row += 2  # Move to next available row for the next component
 
+# Button to add new component
+button_add_component = ctk.CTkButton(root, text="Add Component", command=add_new_component)
+button_add_component.grid(row=row, column=0, columnspan=2, padx=10, pady=10)
+
 # Calculate Button
 button_calculate = ctk.CTkButton(root, text="Calculate", command=calculate)
-button_calculate.grid(row=row, column=0, columnspan=2, padx=10, pady=10)
+button_calculate.grid(row=row + 1, column=0, columnspan=2, padx=10, pady=10)
 
 # Results Labels for each component dynamically
 for component in COMPONENTS:
     globals()[f"label_{component.lower()}_weight"] = ctk.CTkLabel(root, text=f"{component} Weight: 0.0000 g")
-    globals()[f"label_{component.lower()}_weight"].grid(row=row + 1, column=0, columnspan=2, padx=10, pady=5)
+    globals()[f"label_{component.lower()}_weight"].grid(row=row + 2, column=0, columnspan=2, padx=10, pady=5)
     row += 1
 
 label_total_weight = ctk.CTkLabel(root, text="Total Weight: 0.0000 g")
-label_total_weight.grid(row=row+1, column=0, columnspan=2, padx=10, pady=5)
+label_total_weight.grid(row=row, column=0, columnspan=2, padx=10, pady=5)
 
 # Start the Tkinter event loop
 root.mainloop()
