@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 from molmass import Formula
 
 ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("green")  # Themes: blue (default), dark-blue, green
 
 # Default constants
 DEFAULT_CYL_VOLUME = 40  # L
@@ -46,7 +47,7 @@ def add_new_component():
         COMPONENTS[component_name] = component_formula
 
         # Refresh the UI by adding entry fields for this new component
-        add_component_widgets(component_name, len(entry_percent_widgets) + 5)
+        add_component_widgets(component_name)
 
         # Clear the entry fields for new component inputs
         entry_new_component_name.delete(0, ctk.END)
@@ -69,10 +70,11 @@ def add_new_component():
     entry_new_component_formula.grid(row=1, column=1, padx=10, pady=5)
 
     button_submit = ctk.CTkButton(popup, text="Submit", command=submit_new_component)
-    button_submit.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
+    button_submit.grid(row=1, column=5, columnspan=2, padx=10, pady=10)
 
 # Function to add component widgets dynamically
-def add_component_widgets(component_name, row):
+def add_component_widgets(component_name):
+    global row
     # Label for component percentage
     label_percent = ctk.CTkLabel(root, text=f"{component_name} Percentage (%):")
     label_percent.grid(row=row, column=0, padx=10, pady=5)
@@ -90,6 +92,12 @@ def add_component_widgets(component_name, row):
     component_combobox.set(component_name)  # Default to the name of the component
     component_combobox.grid(row=row + 1, column=1, padx=10, pady=5)
     component_combobox_widgets[component_name] = component_combobox
+
+    # Add the weight label dynamically for the new component
+    globals()[f"label_{component_name.lower()}_weight"] = ctk.CTkLabel(root, text=f"{component_name} Weight: 0.0000 g")
+    globals()[f"label_{component_name.lower()}_weight"].grid(row=row + 2, column=0, columnspan=2, padx=10, pady=5)
+    
+    row += 3  # Update row for the next component
 
 # Function to calculate the weights of all components and show results
 def calculate():
@@ -136,6 +144,7 @@ def calculate():
 # Set up the GUI window
 root = ctk.CTk()
 root.title("Gas Weight Calculator")
+root.iconbitmap('images/SII.ico')
 
 # Create and place widgets for constants
 label_volume = ctk.CTkLabel(root, text="Cylinder Volume (L):")
@@ -175,8 +184,7 @@ component_combobox_widgets = {}
 # Dynamically add initial components (you can add more by clicking "Add Component")
 row = 5
 for component in COMPONENTS:
-    add_component_widgets(component, row)
-    row += 2  # Move to next available row for the next component
+    add_component_widgets(component)
 
 # Button to add new component
 button_add_component = ctk.CTkButton(root, text="Add Component", command=add_new_component)
@@ -186,14 +194,9 @@ button_add_component.grid(row=row, column=0, columnspan=2, padx=10, pady=10)
 button_calculate = ctk.CTkButton(root, text="Calculate", command=calculate)
 button_calculate.grid(row=row + 1, column=0, columnspan=2, padx=10, pady=10)
 
-# Results Labels for each component dynamically
-for component in COMPONENTS:
-    globals()[f"label_{component.lower()}_weight"] = ctk.CTkLabel(root, text=f"{component} Weight: 0.0000 g")
-    globals()[f"label_{component.lower()}_weight"].grid(row=row + 2, column=0, columnspan=2, padx=10, pady=5)
-    row += 2
-
+# Total weight label
 label_total_weight = ctk.CTkLabel(root, text="Total Weight: 0.0000 g")
-label_total_weight.grid(row=row, column=0, columnspan=2, padx=10, pady=5)
+label_total_weight.grid(row=row + 2, column=0, columnspan=2, padx=10, pady=5)
 
 # Start the Tkinter event loop
 root.mainloop()
