@@ -190,7 +190,7 @@ button_calculate.grid(row=row + 1, column=0, columnspan=2, padx=10, pady=10)
 for component in COMPONENTS:
     globals()[f"label_{component.lower()}_weight"] = ctk.CTkLabel(root, text=f"{component} Weight: 0.0000 g")
     globals()[f"label_{component.lower()}_weight"].grid(row=row + 2, column=0, columnspan=2, padx=10, pady=5)
-    row += 1
+    row += 2
 
 label_total_weight = ctk.CTkLabel(root, text="Total Weight: 0.0000 g")
 label_total_weight.grid(row=row, column=0, columnspan=2, padx=10, pady=5)
