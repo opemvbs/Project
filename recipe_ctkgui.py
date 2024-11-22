@@ -2,207 +2,208 @@ import customtkinter as ctk
 from tkinter import ttk, messagebox
 from molmass import Formula
 
-ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("green")  # Themes: blue (default), dark-blue, green
-
 # Default constants
 DEFAULT_CYL_VOLUME = 40  # L
 DEFAULT_FILL_PRESSURE = 150  # bar
 DEFAULT_GAS_CONSTANT = 0.08314  # L.Bar/mol.g.K
-DEFAULT_TEMPERATURE = 295  # K
+DEFAULT_TEMPERATURE = 293  # K
 DEFAULT_Z_MIX = 0.995
 
 # Available gases (can be expanded dynamically)
 COMPONENTS = {
     "OXYGEN": 'O2',
     "NITROGEN": 'N2',
-    # More components can be added by the user via the app
 }
 
-# Function to calculate molar mass
-def get_molar_mass(component):
-    formula = COMPONENTS.get(component)
-    if formula:
-        return Formula(formula).mass
-    else:
-        raise ValueError(f"Unknown component: {component}")
+class GasCalculatorApp:
+    def __init__(self, root):
+        self.root = root
+        self.row = 6
+        self.entry_percent_widgets = {}
+        self.component_combobox_widgets = {}
 
-# Function to calculate weight
-def calculated_weight(component, percent_mol, volume, pressure, constant, temperature, z_mix):
-    molar_mass = get_molar_mass(component)
-    weight = pressure * volume * percent_mol * molar_mass / (z_mix * constant * temperature * 100)
-    return weight
+        # Set up the GUI window
+        self.root.title("Gas Weight Calculator")
+        self.root.iconbitmap('images/SII.ico')
+        self.setup_ui()
 
-# Function to add new components dynamically
-def add_new_component():
-    def submit_new_component():
-        component_name = entry_new_component_name.get().strip().upper()
-        component_formula = entry_new_component_formula.get().strip().upper()
+    def setup_ui(self):
+        # Create and place widgets for constants
+        self.entry_volume = self.create_label_entry("Cylinder Volume (L):", DEFAULT_CYL_VOLUME, 0, 0)
+        self.entry_pressure = self.create_label_entry("Pressure (bar):", DEFAULT_FILL_PRESSURE, 1, 0)
+        self.entry_temperature = self.create_label_entry("Temperature (K):", DEFAULT_TEMPERATURE, 2, 0)
+        self.entry_gas_constant = self.create_label_entry("Gas Constant (L.Bar/mol.g.K):", DEFAULT_GAS_CONSTANT, 3, 0)
+        self.entry_z_mix = self.create_label_entry("Z Mix (Compression Factor):", DEFAULT_Z_MIX, 4, 0)
 
-        if not component_name or not component_formula:
-            messagebox.showerror("Input Error", "Both name and formula are required!")
-            return
+        # Component and weight headers
+        self.create_component_headers()
 
-        # Add the new component to the dictionary
-        COMPONENTS[component_name] = component_formula
+        # Dynamically add initial components (can be expanded)
+        for component in COMPONENTS:
+            self.add_component_widgets(component)
 
-        # Refresh the UI by adding entry fields for this new component
-        add_component_widgets(component_name)
+        # Buttons
+        self.add_buttons()
 
-        # Clear the entry fields for new component inputs
-        entry_new_component_name.delete(0, ctk.END)
-        entry_new_component_formula.delete(0, ctk.END)
+    def create_label_entry(self, label_text, default_value, row, col):
+        label = ctk.CTkLabel(self.root, text=label_text)
+        label.grid(row=row, column=col, padx=10, pady=5)
+        entry = ctk.CTkEntry(self.root)
+        entry.insert(0, default_value)
+        entry.grid(row=row, column=col + 1, padx=10, pady=5)
+        return entry
 
-        messagebox.showinfo("Success", f"Component {component_name} added successfully!")
-
-    # Create the popup window to enter the new component
-    popup = ctk.CTkToplevel(root)
-    popup.title("Add New Component")
-
-    label_name = ctk.CTkLabel(popup, text="Component Name:")
-    label_name.grid(row=0, column=0, padx=10, pady=5)
-    entry_new_component_name = ctk.CTkEntry(popup)
-    entry_new_component_name.grid(row=0, column=1, padx=10, pady=5)
-
-    label_formula = ctk.CTkLabel(popup, text="Component Formula:")
-    label_formula.grid(row=1, column=0, padx=10, pady=5)
-    entry_new_component_formula = ctk.CTkEntry(popup)
-    entry_new_component_formula.grid(row=1, column=1, padx=10, pady=5)
-
-    button_submit = ctk.CTkButton(popup, text="Submit", command=submit_new_component)
-    button_submit.grid(row=1, column=5, columnspan=2, padx=10, pady=10)
-
-# Function to add component widgets dynamically
-def add_component_widgets(component_name):
-    global row
-    
-    entry_percent = ctk.CTkEntry(root)
-    entry_percent.insert(0, "0.0")  # Default value
-    entry_percent.grid(row=row, column=3, padx=10, pady=5)
-    entry_percent_widgets[component_name] = entry_percent
-    
-    # Combobox for selecting component
-    label_component = ctk.CTkLabel(root, text=f"{component_name} :")
-    label_component.grid(row=row, column=0, padx=10, pady=5)
-    
-    component_combobox = ctk.CTkComboBox(root, values=list(COMPONENTS.keys()))
-    component_combobox.set(component_name)  # Default to the name of the component
-    component_combobox.grid(row=row, column=1, padx=10, pady=5)
-    component_combobox_widgets[component_name] = component_combobox
-
-    # Add the weight label dynamically for the new component
-    globals()[f"label_{component_name.lower()}_weight"] = ctk.CTkLabel(root, text=f"0.0000 g")
-    globals()[f"label_{component_name.lower()}_weight"].grid(row=row, column=4, columnspan=2, padx=10, pady=5)
-    
-    row += 3  # Update row for the next component
-
-# Function to calculate the weights of all components and show results
-def calculate():
-    try:
-        # Get user inputs for the constants
-        volume = float(entry_volume.get())
-        pressure = float(entry_pressure.get())
-        temperature = float(entry_temperature.get())
-        gas_constant = float(entry_gas_constant.get())
-        z_mix = float(entry_z_mix.get())
+    def create_component_headers(self):
+        ctk.CTkLabel(self.root, text="Component").grid(row=5, column=0, columnspan=2, padx=10, pady=5)
+        ctk.CTkLabel(self.root, text="Percentage (%)").grid(row=5, column=3, padx=10, pady=5)
+        ctk.CTkLabel(self.root, text="Molar Mass").grid(row=5, column=4, columnspan=1, padx=10, pady=5)
+        ctk.CTkLabel(self.root, text="Weight").grid(row=5, column=6, columnspan=2, padx=10, pady=5)
         
-        total_percent = 0
-        component_weights = {}
+
+    def add_buttons(self):
+        # Add new component button
+        button_add_component = ctk.CTkButton(self.root, text="Add Component", command=self.add_new_component)
+        button_add_component.grid(row=4, column=8, columnspan=2, padx=10, pady=10)
+
+        # Calculate button
+        button_calculate = ctk.CTkButton(self.root, text="Calculate", command=self.calculate)
+        button_calculate.grid(row=5, column=8, columnspan=2, padx=10, pady=10)
+
+        # Total weight label
+        self.label_total_weight = ctk.CTkLabel(self.root, text="Total Weight: 0.0000 g")
+        self.label_total_weight.grid(row=6, column=8, columnspan=1, padx=10, pady=5)
+
+    def add_component_widgets(self, component_name):
+        """Add the dynamic widgets for each component."""
+        entry_percent = ctk.CTkEntry(self.root)
+        entry_percent.insert(0, "0.0")
+        entry_percent.grid(row=self.row, column=3, padx=10, pady=5)
+        self.entry_percent_widgets[component_name] = entry_percent
+
+        # label_component = ctk.CTkLabel(self.root, text=f"{component_name} :")
+        # label_component.grid(row=self.row, column=0, padx=10, pady=5)
+
+        component_combobox = ctk.CTkComboBox(self.root, values=list(COMPONENTS.keys()), width=300)
+        component_combobox.set(component_name)
+        component_combobox.grid(row=self.row, column=0, columnspan=2, padx=10, pady=5)
+        self.component_combobox_widgets[component_name] = component_combobox
+
+        label_molarmass = ctk.CTkLabel(self.root, text=f"0.0000 g/mol")
+        label_molarmass.grid(row=self.row, column=4, columnspan=2, padx=10, pady=5)
+        setattr(self, f"label_{component_name.lower()}_molarmass", label_molarmass)
+
+        label_weight = ctk.CTkLabel(self.root, text=f"0.0000 g")
+        label_weight.grid(row=self.row, column=6, columnspan=2, padx=10, pady=5)
+        setattr(self, f"label_{component_name.lower()}_weight", label_weight)
+
+        self.row += 3
+
+    def add_new_component(self):
+        """Add a new component dynamically."""
+        def submit_new_component():
+            component_name = entry_new_component_name.get().strip().upper()
+            component_formula = entry_new_component_formula.get().strip()
+
+            if not component_name or not component_formula:
+                messagebox.showerror("Input Error", "Both name and formula are required!")
+                return
+
+            # Add new component to the COMPONENTS dictionary
+            COMPONENTS[component_name] = component_formula
+
+            # Update the ComboBox values for all components
+            self.update_combobox_values()
+
+            # Add component widgets for the new component
+            self.add_component_widgets(component_name)
+
+            # Clear entry fields
+            entry_new_component_name.delete(0, ctk.END)
+            entry_new_component_formula.delete(0, ctk.END)
+
+            messagebox.showinfo("Success", f"Component {component_name} added successfully!")
+
+        popup = ctk.CTkToplevel(self.root)
+        popup.title("Add New Component")
+
+        label_name = ctk.CTkLabel(popup, text="Component Name:")
+        label_name.grid(row=0, column=0, padx=10, pady=5)
+        entry_new_component_name = ctk.CTkEntry(popup)
+        entry_new_component_name.grid(row=0, column=1, padx=10, pady=5)
+
+        label_formula = ctk.CTkLabel(popup, text="Component Formula:")
+        label_formula.grid(row=1, column=0, padx=10, pady=5)
+        entry_new_component_formula = ctk.CTkEntry(popup)
+        entry_new_component_formula.grid(row=1, column=1, padx=10, pady=5)
+
+        button_submit = ctk.CTkButton(popup, text="Submit", command=submit_new_component)
+        button_submit.grid(row=1, column=5, columnspan=2, padx=10, pady=10)
+
+    def update_combobox_values(self):
+        """Update the ComboBox values with the latest components."""
+        # Get the updated list of component names
+        component_names = list(COMPONENTS.keys())
         
-        # Loop through the components and calculate the weight for each one
-        for component_name in entry_percent_widgets.keys():
-            percent = float(entry_percent_widgets[component_name].get())
-            if percent < 0 or percent > 100:
-                raise ValueError(f"{component_name} percentage must be between 0 and 100.")
-            
-            total_percent += percent
-            if total_percent > 100:
-                raise ValueError("Total percentage of all components cannot exceed 100.")
-            
-            # Get the selected component for this entry
-            selected_component = component_combobox_widgets[component_name].get()
-            
-            # Calculate the weight of the component
-            weight = calculated_weight(selected_component, percent, volume, pressure, gas_constant, temperature, z_mix)
-            component_weights[component_name] = weight
-        
-        # Display results
-        label_total_weight.configure(text=f"Total Weight: {sum(component_weights.values()):.4f} g")
-        
-        # Update the weight labels for each component dynamically
-        for component_name, weight in component_weights.items():
-            component_label = globals().get(f"label_{component_name.lower()}_weight")
-            if component_label:
-                component_label.configure(text=f"Weight: {weight:.4f} g")
-        
-    except ValueError as e:
-        messagebox.showerror("Input Error", str(e))
+        # Update each ComboBox with the new values
+        for combobox in self.component_combobox_widgets.values():
+            combobox.configure(values=component_names)
 
-# Set up the GUI window
-root = ctk.CTk()
-root.title("Gas Weight Calculator")
-root.iconbitmap('images/SII.ico')
 
-# Create and place widgets for constants
-label_volume = ctk.CTkLabel(root, text="Cylinder Volume (L):")
-label_volume.grid(row=0, column=0, padx=10, pady=5)
-entry_volume = ctk.CTkEntry(root)
-entry_volume.insert(0, DEFAULT_CYL_VOLUME)
-entry_volume.grid(row=0, column=1, padx=10, pady=5)
+    def calculate(self):
+        """Calculate the weights of all components and show results."""
+        try:
+            # Get user inputs for constants
+            volume = float(self.entry_volume.get())
+            pressure = float(self.entry_pressure.get())
+            temperature = float(self.entry_temperature.get())
+            gas_constant = float(self.entry_gas_constant.get())
+            z_mix = float(self.entry_z_mix.get())
 
-label_pressure = ctk.CTkLabel(root, text="Pressure (bar):")
-label_pressure.grid(row=1, column=0, padx=10, pady=5)
-entry_pressure = ctk.CTkEntry(root)
-entry_pressure.insert(0, DEFAULT_FILL_PRESSURE)
-entry_pressure.grid(row=1, column=1, padx=10, pady=5)
+            total_percent = 0
+            component_weights = {}
 
-label_temperature = ctk.CTkLabel(root, text="Temperature (K):")
-label_temperature.grid(row=2, column=0, padx=10, pady=5)
-entry_temperature = ctk.CTkEntry(root)
-entry_temperature.insert(0, DEFAULT_TEMPERATURE)
-entry_temperature.grid(row=2, column=1, padx=10, pady=5)
+            for component_name in self.entry_percent_widgets.keys():
+                percent = float(self.entry_percent_widgets[component_name].get())
+                if not 0 <= percent <= 100:
+                    raise ValueError(f"{component_name} percentage must be between 0 and 100.")
 
-label_gas_constant = ctk.CTkLabel(root, text="Gas Constant (L.Bar/mol.g.K):")
-label_gas_constant.grid(row=3, column=0, padx=10, pady=5)
-entry_gas_constant = ctk.CTkEntry(root)
-entry_gas_constant.insert(0, DEFAULT_GAS_CONSTANT)
-entry_gas_constant.grid(row=3, column=1, padx=10, pady=5)
+                total_percent += percent
+                if total_percent > 100:
+                    raise ValueError("Total percentage of all components cannot exceed 100.")
 
-label_z_mix = ctk.CTkLabel(root, text="Z Mix (Compression Factor):")
-label_z_mix.grid(row=4, column=0, padx=10, pady=5)
-entry_z_mix = ctk.CTkEntry(root)
-entry_z_mix.insert(0, DEFAULT_Z_MIX)
-entry_z_mix.grid(row=4, column=1, padx=10, pady=5)
+                # Get the selected component for this entry
+                selected_component = self.component_combobox_widgets[component_name].get()
 
-label_component = ctk.CTkLabel(root, text="Component")
-label_component.grid(row=5, column=0, columnspan=2, padx=10, pady=5)
+                # Calculate the weight of the component
+                weight, molarmass = self.calculated_weight(selected_component, percent, volume, pressure, gas_constant, temperature, z_mix)
+                component_weights[component_name] = weight, molarmass
 
-label_percent = ctk.CTkLabel(root, text="Percentage (%)")
-label_percent.grid(row=5, column=3, columnspan=1, padx=10, pady=5)
+            # Display results
+            # self.label_total_weight.configure(text=f"Total Weight: {sum(component_weights.values()):.4f} g")
+            self.label_total_weight.configure(text=f"Total Weight: {sum(weight for weight, _ in component_weights.values()):.4f} g")
 
-label_weight = ctk.CTkLabel(root, text="Weight")
-label_weight.grid(row=5, column=4, columnspan=2, padx=10, pady=5)
 
-# Create dictionaries to store dynamic widgets
-entry_percent_widgets = {}
-component_combobox_widgets = {}
+            # Update the weight and molar mass labels for each component
+            for component_name, (weight, molarmass) in component_weights.items():
+                mass_label = getattr(self, f"label_{component_name.lower()}_molarmass")
+                mass_label.configure(text=f"{molarmass:.4f} g/mol")
+                weight_label = getattr(self, f"label_{component_name.lower()}_weight")
+                weight_label.configure(text=f"{weight:.4f} g")
 
-# Dynamically add initial components (you can add more by clicking "Add Component")
-row = 6
-for component in COMPONENTS:
-    add_component_widgets(component)
+        except ValueError as e:
+            messagebox.showerror("Input Error", str(e))
 
-# Button to add new component
-button_add_component = ctk.CTkButton(root, text="Add Component", command=add_new_component)
-button_add_component.grid(row=4, column=4, columnspan=2, padx=10, pady=10)
+    def calculated_weight(self, component, percent_mol, volume, pressure, constant, temperature, z_mix):
+        """Calculate the weight of a given component."""
+        formula = COMPONENTS.get(component)
+        if not formula:
+            raise ValueError(f"Unknown component: {component}")
+        molar_mass = Formula(formula).mass
+        return pressure * volume * percent_mol * molar_mass / (z_mix * constant * temperature * 100), molar_mass
 
-# Calculate Button
-button_calculate = ctk.CTkButton(root, text="Calculate", command=calculate)
-button_calculate.grid(row=4, column=6, columnspan=2, padx=10, pady=10)
-
-# Total weight label
-label_total_weight = ctk.CTkLabel(root, text="Total Weight: 0.0000 g")
-label_total_weight.grid(row=5, column=6, columnspan=1, padx=10, pady=5)
-
-# Start the Tkinter event loop
-root.mainloop()
+if __name__ == "__main__":
+    ctk.set_appearance_mode("dark")
+    ctk.set_default_color_theme("green")
+    root = ctk.CTk()
+    app = GasCalculatorApp(root)
+    root.mainloop()
