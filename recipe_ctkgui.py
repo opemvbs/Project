@@ -75,27 +75,24 @@ def add_new_component():
 # Function to add component widgets dynamically
 def add_component_widgets(component_name):
     global row
-    # Label for component percentage
-    label_percent = ctk.CTkLabel(root, text=f"{component_name} Percentage (%):")
-    label_percent.grid(row=row, column=0, padx=10, pady=5)
     
     entry_percent = ctk.CTkEntry(root)
     entry_percent.insert(0, "0.0")  # Default value
-    entry_percent.grid(row=row, column=1, padx=10, pady=5)
+    entry_percent.grid(row=row, column=3, padx=10, pady=5)
     entry_percent_widgets[component_name] = entry_percent
     
     # Combobox for selecting component
-    label_component = ctk.CTkLabel(root, text=f"{component_name} Component:")
-    label_component.grid(row=row + 1, column=0, padx=10, pady=5)
+    label_component = ctk.CTkLabel(root, text=f"{component_name} :")
+    label_component.grid(row=row, column=0, padx=10, pady=5)
     
     component_combobox = ctk.CTkComboBox(root, values=list(COMPONENTS.keys()))
     component_combobox.set(component_name)  # Default to the name of the component
-    component_combobox.grid(row=row + 1, column=1, padx=10, pady=5)
+    component_combobox.grid(row=row, column=1, padx=10, pady=5)
     component_combobox_widgets[component_name] = component_combobox
 
     # Add the weight label dynamically for the new component
-    globals()[f"label_{component_name.lower()}_weight"] = ctk.CTkLabel(root, text=f"{component_name} Weight: 0.0000 g")
-    globals()[f"label_{component_name.lower()}_weight"].grid(row=row + 2, column=0, columnspan=2, padx=10, pady=5)
+    globals()[f"label_{component_name.lower()}_weight"] = ctk.CTkLabel(root, text=f"0.0000 g")
+    globals()[f"label_{component_name.lower()}_weight"].grid(row=row, column=4, columnspan=2, padx=10, pady=5)
     
     row += 3  # Update row for the next component
 
@@ -136,7 +133,7 @@ def calculate():
         for component_name, weight in component_weights.items():
             component_label = globals().get(f"label_{component_name.lower()}_weight")
             if component_label:
-                component_label.configure(text=f"{component_name} Weight: {weight:.4f} g")
+                component_label.configure(text=f"Weight: {weight:.4f} g")
         
     except ValueError as e:
         messagebox.showerror("Input Error", str(e))
@@ -177,26 +174,35 @@ entry_z_mix = ctk.CTkEntry(root)
 entry_z_mix.insert(0, DEFAULT_Z_MIX)
 entry_z_mix.grid(row=4, column=1, padx=10, pady=5)
 
+label_component = ctk.CTkLabel(root, text="Component")
+label_component.grid(row=5, column=0, columnspan=2, padx=10, pady=5)
+
+label_percent = ctk.CTkLabel(root, text="Percentage (%)")
+label_percent.grid(row=5, column=3, columnspan=1, padx=10, pady=5)
+
+label_weight = ctk.CTkLabel(root, text="Weight")
+label_weight.grid(row=5, column=4, columnspan=2, padx=10, pady=5)
+
 # Create dictionaries to store dynamic widgets
 entry_percent_widgets = {}
 component_combobox_widgets = {}
 
 # Dynamically add initial components (you can add more by clicking "Add Component")
-row = 5
+row = 6
 for component in COMPONENTS:
     add_component_widgets(component)
 
 # Button to add new component
 button_add_component = ctk.CTkButton(root, text="Add Component", command=add_new_component)
-button_add_component.grid(row=row, column=0, columnspan=2, padx=10, pady=10)
+button_add_component.grid(row=4, column=4, columnspan=2, padx=10, pady=10)
 
 # Calculate Button
 button_calculate = ctk.CTkButton(root, text="Calculate", command=calculate)
-button_calculate.grid(row=row + 1, column=0, columnspan=2, padx=10, pady=10)
+button_calculate.grid(row=4, column=6, columnspan=2, padx=10, pady=10)
 
 # Total weight label
 label_total_weight = ctk.CTkLabel(root, text="Total Weight: 0.0000 g")
-label_total_weight.grid(row=row + 2, column=0, columnspan=2, padx=10, pady=5)
+label_total_weight.grid(row=5, column=6, columnspan=1, padx=10, pady=5)
 
 # Start the Tkinter event loop
 root.mainloop()
