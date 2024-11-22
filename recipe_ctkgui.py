@@ -202,7 +202,7 @@ class GasCalculatorApp:
         return pressure * volume * percent_mol * molar_mass / (z_mix * constant * temperature * 100), molar_mass
 
 if __name__ == "__main__":
-    ctk.set_appearance_mode("dark")
+    ctk.set_appearance_mode("light")
     ctk.set_default_color_theme("green")
     root = ctk.CTk()
     app = GasCalculatorApp(root)
