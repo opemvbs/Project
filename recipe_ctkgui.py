@@ -16,6 +16,7 @@ DEFAULT_CONSTANTS = {
 COMPONENTS = {
     "OXYGEN": "O2",
     "NITROGEN": "N2",
+    "WATER": "H2O"
 }
 
 class GasCalculatorApp:
