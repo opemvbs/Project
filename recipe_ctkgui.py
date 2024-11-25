@@ -209,9 +209,9 @@ class GasCalculatorApp:
                 if percentage == 0:
                     return
                 molar_volume = (1e3 * molar_mass) / density
-                print(mole)
-                print(density)
-                print(molar_volume)
+                print(f"{component_name} {mole}")
+                print(f"{component_name} {density}")
+                print(f"{component_name} {molar_volume}")
 
                 
                 
