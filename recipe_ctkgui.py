@@ -9,7 +9,7 @@ DEFAULT_CONSTANTS = {
     "fill_pressure": 150,  # bar
     "gas_constant": 0.08314,  # L.Bar/mol.g.K
     "temperature": 293,  # K
-    "z_mix": 0.995,
+    "z_mix": 1,
 }
 
 # Available components
@@ -193,16 +193,28 @@ class GasCalculatorApp:
 
                 if gas not in COMPONENTS or not (0 <= percentage <= 100):
                     raise ValueError(f"Invalid input for {component_name}")
-
+                
                 total_percentage += percentage
 
                 formula = Formula(COMPONENTS[gas])
                 molar_mass = formula.mass
-                molar_volume = formula.mass / constants["cyl_volume"]
                 weight = (
                     constants["fill_pressure"] * constants["cyl_volume"] * percentage * molar_mass / (constants["z_mix"] * constants["gas_constant"] * constants["temperature"] * 100)
                 )
 
+                
+
+                mole = weight / molar_mass
+                density = mole * molar_mass / constants["cyl_volume"] # g/L
+                if percentage == 0:
+                    return
+                molar_volume = (1e3 * molar_mass) / density
+                print(mole)
+                print(density)
+                print(molar_volume)
+
+                
+                
                 # Update labels
                 widgets["molar_mass"].configure(text=f"{molar_mass:.4f} g/mol")
                 widgets["weight"].configure(text=f"{weight:.4f} g")

@@ -14,8 +14,8 @@ def get_CAS(chemical_name):
         return f"Error: {e}"
 
 # Load the CSV file
-input_file = "material.csv"  # Replace with your file name
-output_file = "material_with_cas.csv"  # Output file name
+input_file = "chemprop.csv"  # Replace with your file name
+output_file = "chemprop_with_cas.csv"  # Output file name
 df = pd.read_csv(input_file)
 
 # Ensure the input file has the correct column

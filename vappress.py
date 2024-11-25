@@ -3,7 +3,7 @@ from chemicals import Tc, Pc, omega
 from chemicals import Lee_Kesler
 from chemicals import Ambrose_Walton
 from chemicals import Sanjari
-from chemicals.vapor_pressure import Psat_data_AntoinePoling
+
 
 def get_parameter(component):
     T_crit = Tc(component)
@@ -18,8 +18,8 @@ def calculate(component, T):
     vappres_S  = Sanjari(T, T_crit, P_crit, O_comp)
     return vappres_LK, vappres_AW, vappres_S
 
-CAS = CAS_from_any('acetaldehyde')
-T = 288.15
+CAS = CAS_from_any('thiophene')
+T = 293
 
 Pv_LK, Pv_AW, Pv_S = calculate(CAS, T)
 print(Pv_LK * 1.450377e-4)
