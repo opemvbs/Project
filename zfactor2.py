@@ -6,7 +6,7 @@ from chemicals import CAS_from_any
 from chemicals import MW
 import pandas as pd
 
-N2 = CAS_from_any("oxygen")
+N2 = CAS_from_any("hydrogen sulphide")
 Ar = CAS_from_any("argon")
 N2_MW = MW("nitrogen")
 Ar_MW = MW("argon")
