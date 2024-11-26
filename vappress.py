@@ -18,7 +18,7 @@ def calculate(component, T):
     vappres_S  = Sanjari(T, T_crit, P_crit, O_comp)
     return vappres_LK, vappres_AW, vappres_S
 
-CAS = CAS_from_any('thiophene')
+CAS = CAS_from_any('carbon monoxide')
 T = 293
 
 Pv_LK, Pv_AW, Pv_S = calculate(CAS, T)
