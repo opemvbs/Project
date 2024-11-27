@@ -4,7 +4,6 @@ from chemicals import Lee_Kesler
 from chemicals import Ambrose_Walton
 from chemicals import Sanjari
 
-
 def get_parameter(component):
     T_crit = Tc(component)
     P_crit = Pc(component)

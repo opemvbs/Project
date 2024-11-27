@@ -1,72 +1,93 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # For 3D plotting
-from chemicals import Tc, Pc, Vc, omega
-from chemicals import CAS_from_any
-from chemicals import MW
-import pandas as pd
+from chemicals import Tc, Pc, Vc, omega, CAS_from_any, MW
 
-N2 = CAS_from_any("hydrogen sulphide")
-Ar = CAS_from_any("argon")
-N2_MW = MW("nitrogen")
-Ar_MW = MW("argon")
-N2_pct = 0.1
-Ar_pct = 0.9
+# Constants and component details
+COMPONENT = "argon"
+P_MIN, P_MAX, P_STEP = 10, 160, 10  # Pressure range in bar
+T_MIN, T_MAX, T_STEP = 294, 314, 1  # Temperature range in Kelvin
 
-def calculate_Z(P, T):
-    T = T
+# Retrieve component properties
+CAS = CAS_from_any(COMPONENT)
+MW_component = MW(COMPONENT)
+T_crit = Tc(CAS)
+P_crit = Pc(CAS) / 101325  # Convert Pa to bar
+V_crit = Vc(CAS) * 1e6  # Convert m^3/mol to cm^3/mol
+omega_value = omega(CAS)
 
-    T_crit_N2 = Tc(N2)
-    P_crit_N2 = Pc(N2) / 101300
-    V_crit_N2 = Vc(N2) * 10**6
-    Omega_N2 = omega(N2)
-    rho_c_N2 = N2_MW / V_crit_N2
+def calculate_Z(P, T, T_crit, P_crit, omega_value):
+    """
+    Calculate the compressibility factor (Z) using the virial equation of state.
+    Parameters:
+        P (float): Pressure in bar.
+        T (float): Temperature in Kelvin.
+        T_crit (float): Critical temperature in Kelvin.
+        P_crit (float): Critical pressure in bar.
+        omega_value (float): Acentric factor of the component.
+    Returns:
+        float: Compressibility factor Z.
+    """
+    Tr = T / T_crit  # Reduced temperature
+    Pr = P / P_crit  # Reduced pressure
 
-    Pr_N2 = P/P_crit_N2
-    Tr_N2 = T/T_crit_N2
+    B0 = 0.083 - 0.422 / (Tr ** 1.6)
+    B1 = 0.139 - 0.172 / (Tr ** 4.2)
+    B = B0 + omega_value * B1
 
-    B0 = 0.083-(0.422/(Tr_N2**1.6))
-    B1 = 0.139-(0.172/(Tr_N2**4.2))
-    B_up = B0 + (Omega_N2 * B1)
+    return 1 + B * (Pr / Tr)
 
-    Z = 1 + (B0*(Pr_N2/Tr_N2)) + (Omega_N2 * B1 * (Pr_N2/Tr_N2))
+def generate_data(P_range, T_range, T_crit, P_crit, omega_value):
+    """
+    Generate a DataFrame of Z values for given pressure and temperature ranges.
+    Parameters:
+        P_range (list): List of pressures in bar.
+        T_range (list): List of temperatures in Kelvin.
+        T_crit (float): Critical temperature in Kelvin.
+        P_crit (float): Critical pressure in bar.
+        omega_value (float): Acentric factor of the component.
+    Returns:
+        pd.DataFrame: DataFrame containing P, T, and Z values.
+    """
+    data = []
+    for P in P_range:
+        for T in T_range:
+            Z = calculate_Z(P, T, T_crit, P_crit, omega_value)
+            data.append({'Pressure (P)': P, 'Temperature (T)': T, 'Z': Z})
+    return pd.DataFrame(data)
 
-    return Z
+def plot_3d(data):
+    """
+    Create a 3D scatter plot of Z vs Pressure and Temperature.
+    Parameters:
+        data (pd.DataFrame): DataFrame containing 'Pressure (P)', 'Temperature (T)', and 'Z' columns.
+    """
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(data['Pressure (P)'], data['Temperature (T)'], data['Z'], c=data['Z'], cmap='viridis')
 
-# Create an empty list to store results
-results = []
+    # Adding labels and title
+    ax.set_xlabel('Pressure (P) [bar]')
+    ax.set_ylabel('Temperature (T) [K]')
+    ax.set_zlabel('Compressibility Factor (Z)')
+    ax.set_title('3D Plot of Z vs P and T')
 
-# Loop over the range of P and T values
-for P in range(10, 160, 10):
-    for T in range(294, 314, 1):
-        Z = calculate_Z(P, T)
-        results.append({'Pressure (P)': P, 'Temperature (T)': T, 'Z': Z})
+    plt.show()
 
-# Convert the results list to a pandas DataFrame
-df = pd.DataFrame(results)
+def main():
+    # Define pressure and temperature ranges
+    P_range = range(P_MIN, P_MAX, P_STEP)
+    T_range = range(T_MIN, T_MAX, T_STEP)
 
-# Save the DataFrame to a CSV file
-df.to_csv('output.csv', index=False)
+    # Generate Z data
+    df = generate_data(P_range, T_range, T_crit, P_crit, omega_value)
 
-# Create a 3D plot of Pressure (P), Temperature (T), and Z
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
+    # Save data to CSV
+    # df.to_csv('output.csv', index=False)
+    # print("Data saved to 'output.csv'.")
 
-# Extracting values for plotting
-P_values = df['Pressure (P)']
-T_values = df['Temperature (T)']
-Z_values = df['Z']
+    # Plot 3D graph
+    plot_3d(df)
 
-# Plotting the 3D surface
-ax.scatter(P_values, T_values, Z_values, c=Z_values, cmap='viridis')
-
-# Adding labels and title
-ax.set_xlabel('Pressure (P)')
-ax.set_ylabel('Temperature (T)')
-ax.set_zlabel('Z')
-ax.set_title('3D Plot of Z vs P and T')
-
-# Show the plot
-plt.show()
-
-print("Data saved to 'output.csv' and graph displayed.")
+if __name__ == "__main__":
+    main()
