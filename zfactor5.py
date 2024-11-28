@@ -121,15 +121,15 @@ def generate_mixture_data(P, T, T_crit, P_crit, omega_value):
 
 def main_mixture():
     # Define components and mole fractions
-    components = ["oxygen", "argon"]  # Add more components as needed
-    mole_fractions = [0.1, 0.9]  # Ensure these sum to 1
+    components = ["argon", "oxygen", "nitrogen"]  # Add more components as needed
+    mole_fractions = [0.010187, 0.151130, 0.838683]  # Ensure these sum to 1
 
     # Calculate mixture properties
     T_crit_mix, P_crit_mix, omega_mix = calculate_mixture_properties(components, mole_fractions)
 
     # Define pressure and temperature ranges
-    P = 40
-    T = 293
+    P = 150
+    T = 320.15
 
     # Generate Z data for the mixture
     df = generate_mixture_data(P, T, T_crit_mix, P_crit_mix, omega_mix)
