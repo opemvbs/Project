@@ -1,12 +1,7 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D  # For 3D plotting
-from chemicals import Tc, Pc, omega, CAS_from_any, MW
+from chemicals import Tc, Pc, omega, CAS_from_any
 
-# Constants and range definitions
-P_MIN, P_MAX, P_STEP = 10, 200, 10  # Pressure range in bar
-T_MIN, T_MAX, T_STEP = 273, 323, 1  # Temperature range in Kelvin
 R = 0.08314  # Universal gas constant in L·bar/(mol·K)
 
 def calculate_mixture_properties(components, mole_fractions):
@@ -111,83 +106,35 @@ def calculate_Z_SRK(P, T, T_crit, P_crit, omega):
     real_roots = [np.real(r) for r in roots if np.isreal(r)]
     return max(real_roots)  # Assume gas phase: return largest Z
 
-def generate_mixture_data(P_range, T_range, T_crit, P_crit, omega_value):
+def generate_mixture_data(P, T, T_crit, P_crit, omega_value):
     """
     Generate a DataFrame of Z values for Pitzer, Peng-Robinson, and Redlich-Kwong for mixtures.
     """
     data = []
-    for P in P_range:
-        for T in T_range:
-            Z_pitzer = calculate_Z_pitzer(P, T, T_crit, P_crit, omega_value)
-            Z_PR = calculate_Z_PR(P, T, T_crit, P_crit, omega_value)
-            Z_RK = calculate_Z_RK(P, T, T_crit, P_crit)
-            Z_SRK = calculate_Z_SRK(P, T, T_crit, P_crit, omega_value)
-            data.append({'Pressure (P)': P, 'Temperature (T)': T,
-                         'Z (Pitzer)': Z_pitzer, 'Z (PR)': Z_PR, 'Z (RK)': Z_RK, 'Z (SRK)': Z_SRK})
+    Z_pitzer = calculate_Z_pitzer(P, T, T_crit, P_crit, omega_value)
+    Z_PR = calculate_Z_PR(P, T, T_crit, P_crit, omega_value)
+    Z_RK = calculate_Z_RK(P, T, T_crit, P_crit)
+    Z_SRK = calculate_Z_SRK(P, T, T_crit, P_crit, omega_value)
+    data.append({'Pressure (P)': P, 'Temperature (T)': T,
+                    'Z (Pitzer)': Z_pitzer, 'Z (PR)': Z_PR, 'Z (RK)': Z_RK, 'Z (SRK)': Z_SRK})
     return pd.DataFrame(data)
-
-def plot_3d_comparison(data):
-    """
-    Create 3D scatter plots to compare Pitzer, PR-EOS, and RK results.
-    """
-    fig = plt.figure(figsize=(15, 9))
-
-    ax1 = fig.add_subplot(221, projection='3d')
-    ax1.scatter(data['Pressure (P)'], data['Temperature (T)'], data['Z (Pitzer)'],
-                c=data['Z (Pitzer)'], cmap='viridis')
-    ax1.set_title('Pitzer Correlation')
-    ax1.set_xlabel('Pressure (P) [bar]')
-    ax1.set_ylabel('Temperature (T) [K]')
-    ax1.set_zlabel('Compressibility Factor (Z)')
-
-    ax2 = fig.add_subplot(222, projection='3d')
-    ax2.scatter(data['Pressure (P)'], data['Temperature (T)'], data['Z (PR)'],
-                c=data['Z (PR)'], cmap='plasma')
-    ax2.set_title('Peng-Robinson EOS')
-    ax2.set_xlabel('Pressure (P) [bar]')
-    ax2.set_ylabel('Temperature (T) [K]')
-    ax2.set_zlabel('Compressibility Factor (Z)')
-
-    ax3 = fig.add_subplot(223, projection='3d')
-    ax3.scatter(data['Pressure (P)'], data['Temperature (T)'], data['Z (RK)'],
-                c=data['Z (RK)'], cmap='cividis')
-    ax3.set_title('Redlich-Kwong EOS')
-    ax3.set_xlabel('Pressure (P) [bar]')
-    ax3.set_ylabel('Temperature (T) [K]')
-    ax3.set_zlabel('Compressibility Factor (Z)')
-    
-    ax3 = fig.add_subplot(224, projection='3d')
-    ax3.scatter(data['Pressure (P)'], data['Temperature (T)'], data['Z (SRK)'],
-                c=data['Z (SRK)'], cmap='inferno')
-    ax3.set_title('Soave-Redlich-Kwong EOS')
-    ax3.set_xlabel('Pressure (P) [bar]')
-    ax3.set_ylabel('Temperature (T) [K]')
-    ax3.set_zlabel('Compressibility Factor (Z)')
-
-    plt.tight_layout()
-    plt.show()
 
 def main_mixture():
     # Define components and mole fractions
-    components = ["oxygen", "nitrogen"]  # Add more components as needed
+    components = ["oxygen", "argon"]  # Add more components as needed
     mole_fractions = [0.1, 0.9]  # Ensure these sum to 1
 
     # Calculate mixture properties
     T_crit_mix, P_crit_mix, omega_mix = calculate_mixture_properties(components, mole_fractions)
 
     # Define pressure and temperature ranges
-    P_range = range(P_MIN, P_MAX, P_STEP)
-    T_range = range(T_MIN, T_MAX, T_STEP)
+    P = 40
+    T = 293
 
     # Generate Z data for the mixture
-    df = generate_mixture_data(P_range, T_range, T_crit_mix, P_crit_mix, omega_mix)
-
+    df = generate_mixture_data(P, T, T_crit_mix, P_crit_mix, omega_mix)
+    print(df.to_string(index=False))
     # Save data to CSV
-    # df.to_csv('output_mixture_comparison2.csv', index=False)
-    # print("Data saved to 'output_mixture_comparison2.csv'.")
-
-    # Plot 3D graph for comparison
-    plot_3d_comparison(df)
 
 if __name__ == "__main__":
     main_mixture()
