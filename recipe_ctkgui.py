@@ -1,21 +1,19 @@
 import customtkinter as ctk
+import numpy as np
 from CTkMessagebox import CTkMessagebox
 from molmass import Formula
-# from chemicals import Z
+from chemicals import Tc, Pc, omega, CAS_from_any
 
 # Default constants
 DEFAULT_CONSTANTS = {
     "cyl_volume": 40,  # L
     "fill_pressure": 150,  # bar
-    "gas_constant": 0.08314,  # L.Bar/mol.g.K
+    "gas_constant": 0.0831446261815324,  # L.Bar/mol.g.K
     "temperature": 293,  # K
-    "z_mix": 1,
+    "z_mix": 1,  # This will be replaced with calculated Z later
 }
 
 # Available components
-# COMPONENTS = {'acetaldehyde': '75-07-0', 'acetone': '67-64-1', 'acetylene': '74-86-2', 'ethyl-acetylene': '107-00-6', 'allyl alcohol': '107-18-6', 'ammonia': '7664-41-7', 'argon': '7440-37-1', 'benzene': '71-43-2', 'ethyl-benzene': '100-41-4', 'propyl-benzene': '103-65-1', '1,3-butadiene': '106-99-0', '1,2-butadiene': '590-19-2', 'n-butane': '106-97-8', 'iso-butane': '75-28-5', 'iso-butylene': '7756-94-7', '1-butanol': '71-36-3', '2-butanol': '78-92-2', '1-butene': '106-98-9', '1-butanethiol': '109-79-5', '2-butanethiol': '513-53-1', 'isobutyl mercaptan': '513-44-0', 'tert-butyl mercaptan': '75-66-1', 'cis-2-butene': '590-18-1', 'trans-2-butene': '624-64-6', 'isobutyraldehyde': '78-84-2', 'butyraldehyde': '123-72-8', 'carbon dioxide': '124-38-9', 'carbon disulphide': '75-15-0', 'carbon monoxide': '630-08-0', 'carbonyl sulphide': '463-58-1', 'cumene': '98-82-8', 'chloroethane': '75-00-3', 'chloroform': '67-66-3', '2-chloropropene': '557-98-2', '1-decanethiol': '143-10-2', 'decane': '124-18-5', '1,1-dichloroethane': '75-34-3', '1,2-dichloroethane': '107-06-2', 'diethylamine': '109-89-7', '1,4-diethylbenzene': '105-05-5', 'diethyl sulphide': '352-93-2', 'dimethyl sulphide': '75-18-3', 'dimethyl disulphide': '624-92-0', 'dimethyl ether': '115-10-6', 'diethyl ether': '60-29-7', 'diisobutylene': '107-39-1', 'cis-1,2-dichloroethylene': '156-59-2', 'trans-1,2-dichloroethylene': '156-60-5', '1,4-dioxane': '123-91-1', '2,2-dimethylbutane': '75-83-2', '2,3-dimethylbutane': '79-29-8', 'dodecane': '112-40-3', 'ethane': '74-84-0', 'ethanol': '64-17-5', 'ethanethiol': '75-08-1', 'ethylcyclohexane': '1678-91-7', 'ethylcyclopentane': '1640-89-7', 'ethylene': '74-85-1', 'ethyl formate': '109-94-4', 'methyl ethyl ketone': '78-93-3', 'helium': '7440-59-7', 'heptane': '142-82-5', 'hexane': '110-54-3', 'iso-hexane': '107-83-5', 'cyclo-hexane': '110-82-7', '1-hexanethiol': '111-31-9', '1-hexene': '592-41-6', '2-hexene': '4050-45-7', 'trans-2-hexene': '592-43-8', '1-heptanethiol': '1639-09-4', 'hydrogen': '1333-74-0', 'hydrogen sulphide': '7783-06-4', 'isoprene': '78-79-5', 'methane': '74-82-8', 'methanethiol': '74-93-1', 'methanol': '67-56-1', 'methyl acetate': '79-20-9', '2-methyl-1-butene': '563-46-2', '2-methyl-2-butene': '513-35-9', '3-methyl-1-butene': '563-45-1', 'methyl-cyclo-hexane': '108-87-2', 'methyl chloride': '74-87-3', 'methyl formate': '107-31-3', '2-methylhexane': '591-76-4', '3-methylpentane': '96-14-0', 'nitric oxide': '10102-43-9', 'nitrogen': '7727-37-9', 'nitrogen dioxide': '10102-44-0', 'nitrous oxide': '10024-97-2', 'nonane': '111-84-2', '1-nonanethiol': '1455-21-6', 'octane': '111-65-9', '1-octanethiol': '111-88-6', 'oxygen': '7782-44-7', 'n-pentane': '109-66-0', 'iso-pentane': '78-78-4', 'neo-pentane': '463-82-1', 'cyclo-pentane': '287-92-3', 'methyl-cyclo-pentane': '96-37-7', '2 -propanol': '67-63-0', '1 -propanol': '71-23-8', '1,4-pentadiene': '591-93-5', '1-pentene': '109-67-1', '1-propanethiol': '107-03-9', '2-propanethiol': '75-33-2', 'cis-2-pentene': '627-20-3', 'trans-2-pentene': '646-04-8', '1-pentanethiol': '110-66-7', '2-methyl-1-propanethiol': '513-44-0', '2-methyl-2-propanethiol': '75-66-1', 'propane': '74-98-6', 'cyclo-propane': '75-19-4', 'propylene': '115-07-1', 'propadiene': '463-49-0', 'propyne': '74-99-7', 'propyl ether': '111-43-3', 'diisopropyl ether': '108-20-3', 'propionaldehyde': '123-38-6', 'sulphur dioxide': '7446-09-5', 'sulphur hexafluoride': '2551-62-4', 'sulfolane': '126-33-0', 'styrene': '100-42-5', 'ethyl methyl sulphide': '624-89-5', 'tetradecane': '629-59-4', 'toluene': '108-88-3', 'tridecane': '629-50-5', 'trichloroethylene': '79-01-6', '1,2,4-trichlorobenzene': '120-82-1', '1,2,4-trimethylbenzene': '95-63-6', '2,2,4-trimethylpentane': '540-84-1', '2,4,4-trimethyl-1-pentene': '107-39-1', 'undecane': '1120-21-4', 'valeraldehyde': '110-62-3', 'isovaleraldehyde': '590-86-3', 'vinyl chloride': '75-01-4', 'vinyl acetylene': '689-97-4', 'water': '7732-18-5', 'ortho-xylene': '95-47-6', 'meta-xylene': '108-38-3', 'para-xylene': '106-42-3', 'tert-butyl methyl ether': '1634-04-4', 'tert-butyl ethyl ether': '637-92-3', 'sec-butyl methyl ether': '6795-87-5', 'sec-butyl sulfide': '626-26-6', 'tert-butyl alcohol': '75-65-0', 'isobutanol': '78-83-1', 'tert-amyl methyl ether': '994-05-8', 'thiophene': '110-02-1', 'tetrahydrothiophene': '110-01-0', '2-Ethylthiophene': '872-55-9', '2-Methylthiophene': '554-14-3', '3-Methylthiophene': '616-44-4', '2,5-Dimethylthiophene': '638-02-8', 'difluoromethane': '75-10-5', 'pentafluoroethane': '354-33-6', '1,1,1,2-tetrafluoroethane': '811-97-2'
-#               }
-
 COMPONENTS = {
     "OXYGEN": "O2",
     "NITROGEN": "N2",
@@ -54,18 +52,18 @@ class GasCalculatorApp:
 
     def setup_component_section(self):
         """Set up the header row for component-related inputs."""
-        headers = ["Component", "Z" , "Percentage (%)", "Z x comp", "Molar Mass (g/mol)", "Weight (g)"]
+        headers = ["Component", "Z", "Percentage (%)", "Z x comp", "Molar Mass (g/mol)", "Weight (g)"]
         for col, text in enumerate(headers):
             ctk.CTkLabel(self.root, text=text).grid(
                 row=self.row, column=self.col + col, padx=10, pady=5
             )
-        # self.row += 1  # Move to the next row after headers
+        self.row += 1  # Move to the next row after headers
 
     def setup_buttons(self):
         """Add buttons for various actions."""
         ctk.CTkButton(
             self.root, text="Add Component", command=self.add_new_component
-        ).grid(row=self.row - 1, column=self.col + 6, padx=10, pady=10)
+        ).grid(row=self.row, column=self.col + 6, padx=10, pady=10)
 
         ctk.CTkButton(
             self.root, text="Calculate", command=self.calculate
@@ -166,72 +164,112 @@ class GasCalculatorApp:
         ctk.CTkButton(popup, text="Submit", command=submit_new_component).grid(
             row=2, column=0, columnspan=2, pady=10
         )
-        
+
     def update_combobox_values(self):
         """Update the ComboBox values with the latest components."""
-        # Get the updated list of component names
         component_names = list(COMPONENTS.keys())
-        
-        # Update each ComboBox with the new values
         for combobox in self.component_combobox_widgets.values():
             combobox.configure(values=component_names)
 
+    def calculate_mixture_props(self, components, mole_fractions):
+        """Calculate mixture properties (Tc, Pc, omega) using mixing rules."""
+        if len(components) != len(mole_fractions):
+            raise ValueError("Number of components must match number of mole fractions.")
+        if not np.isclose(sum(mole_fractions), 1.0, atol=1e-6):
+            raise ValueError("Mole fractions must sum to 1.")
+
+        # Calculate mixture critical temperature (Tc) using linear rule
+        T_crit_mix = sum(x * Tc(CAS_from_any(c)) for c, x in zip(components, mole_fractions))
+
+        # Calculate mixture critical pressure (Pc) using geometric mean for binary interactions
+        P_crit_mix = 0
+        for i, (c1, x_i) in enumerate(zip(components, mole_fractions)):
+            for j, (c2, x_j) in enumerate(zip(components, mole_fractions)):
+                if i <= j:  # Avoid redundant calculations
+                    P_crit_mix += 2 * x_i * x_j * np.sqrt(Pc(CAS_from_any(c1)) * Pc(CAS_from_any(c2)))
+        P_crit_mix /= 2  # Final averaging
+        P_crit_mix /= 100000  # Convert from Pa to bar
+
+        # Calculate mixture acentric factor (omega) using linear rule
+        omega_mix = sum(x * omega(CAS_from_any(c)) for c, x in zip(components, mole_fractions))
+
+        return T_crit_mix, P_crit_mix, omega_mix
+
     def calculate(self):
-        """Calculate weights for all components and display the results."""
-        try:
-            constants = {
-                key: float(entry.get())
-                for key, entry in self.entries["constants"].items()
-            }
-            total_percentage = 0
-            total_weight = 0
+        """Perform the gas weight calculation."""
+        components = []
+        mole_fractions = []
 
-            for component_name, widgets in self.component_widgets.items():
-                selector = widgets["selector"]
-                percentage = float(widgets["percentage"].get())
-                gas = selector.get()
+        # # Collect components and mole fractions
+        # for component_name, widget_set in self.component_widgets.items():
+        #     selected_component = widget_set["selector"].get()
+        #     try:
+        #         mole_fraction = float(widget_set["percentage"].get()) / 100
+        #     except ValueError:
+        #         mole_fraction = 0.0  # Handle invalid input
+        #     components.append(COMPONENTS.get(selected_component, selected_component))
+        #     mole_fractions.append(mole_fraction)
 
-                if gas not in COMPONENTS or not (0 <= percentage <= 100):
-                    raise ValueError(f"Invalid input for {component_name}")
-                
-                total_percentage += percentage
+            # Collect components and mole fractions
+        for component_name, widget_set in self.component_widgets.items():
+            selected_component = widget_set["selector"].get()
+            try:
+                mole_fraction = float(widget_set["percentage"].get()) / 100
+            except ValueError:
+                mole_fraction = 0.0  # Handle invalid input
 
-                formula = Formula(COMPONENTS[gas])
-                molar_mass = formula.mass
-                weight = (
-                    constants["fill_pressure"] * constants["cyl_volume"] * percentage * molar_mass / (constants["z_mix"] * constants["gas_constant"] * constants["temperature"] * 100)
-                )
+            # Make sure to add the correct component name to components list
+            components.append(COMPONENTS.get(selected_component, selected_component))
+            mole_fractions.append(mole_fraction)
 
-                
+        # Ensure mole fractions sum to 1
+        if not np.isclose(sum(mole_fractions), 1.0, atol=1e-6):
+            CTkMessagebox(title="Input Error",
+                        message="Mole fractions must sum to 1.",
+                        icon="cancel")
+            return
 
-                mole = weight / molar_mass
-                density = mole * molar_mass / constants["cyl_volume"] # g/L
-                if percentage == 0:
-                    return
-                molar_volume = (1e3 * molar_mass) / density
-                print(f"{component_name} {mole}")
-                print(f"{component_name} {density}")
-                print(f"{component_name} {molar_volume}")
+        # Calculate mixture properties (Tc, Pc, omega)
+        T_crit_mix, P_crit_mix, omega_mix = self.calculate_mixture_props(components, mole_fractions)
 
-                
-                
-                # Update labels
-                widgets["molar_mass"].configure(text=f"{molar_mass:.4f} g/mol")
-                widgets["weight"].configure(text=f"{weight:.4f} g")
-                total_weight += weight
+        def calculate_Z_pitzer(P, T, T_crit, P_crit, omega_value):
+            """
+            Calculate Z using the Pitzer correlation.
+            """
+            Tr = T / T_crit
+            Pr = P / P_crit
 
-            if total_percentage > 0 and total_percentage != 100:
-                raise ValueError("Total percentage of all components must equal 100.")
-            
-            if total_percentage == 0:
-                return
+            B0 = 0.083 - 0.422 / (Tr ** 1.6)
+            B1 = 0.139 - 0.172 / (Tr ** 4.2)
+            B = B0 + omega_value * B1
 
-            self.total_weight_label.configure(text=f"Total Weight: {total_weight:.4f} g")
+            return 1 + B * (Pr / Tr)
 
-        except ValueError as e:
-            CTkMessagebox(title="Calculation Error",
-                          message=str(e),
-                          icon="cancel")
+        # Calculate Z mix
+        R = float(self.entries["constants"]["gas_constant"].get())
+        T = float(self.entries["constants"]["temperature"].get())
+        P = float(self.entries["constants"]["fill_pressure"].get())  # Convert bar to Pa
+        # Z_mix = P * R * T / (P + omega_mix)  # Simplified Z equation
+        Z_mix = calculate_Z_pitzer(P, T, T_crit_mix, P_crit_mix, omega_mix)
+        self.entries["constants"]["z_mix"].delete(0, ctk.END)
+        self.entries["constants"]["z_mix"].insert(0, f"{Z_mix:.4f}")
+
+        # Update weight labels for each component
+        total_weight = 0.0
+        for component_name, widget_set in self.component_widgets.items():
+            selected_component = widget_set["selector"].get()
+            molar_mass = Formula(COMPONENTS.get(selected_component)).mass
+            widget_set["molar_mass"].configure(text=f"{molar_mass:.4f} g/mol")
+            print(selected_component)
+            # Use mole_fractions dictionary for correct mole fraction
+            weight = mole_fractions[selected_component] * molar_mass
+            widget_set["weight"].configure(text=f"{weight:.4f} g")
+            total_weight += weight
+
+        # Update the total weight display
+        self.total_weight_label.configure(text=f"Total Weight: {total_weight:.4f} g")
+
+
 
 if __name__ == "__main__":
     ctk.set_appearance_mode("dark")
