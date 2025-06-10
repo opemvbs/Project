@@ -8,7 +8,7 @@ from chemicals import Tc, Pc, omega, CAS_from_any
 DEFAULT_CONSTANTS = {
     "cyl_volume": 40,  # L
     "fill_pressure": 150,  # bar
-    "gas_constant": 0.0831446261815324,  # L.Bar/mol.g.K
+    "gas_constant": 0.08314,  # L.Bar/mol.g.K
     "temperature": 293,  # K
     "z_mix": 1,  # This will be replaced with calculated Z later
 }
