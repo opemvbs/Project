@@ -200,17 +200,7 @@ class GasCalculatorApp:
         components = []
         mole_fractions = []
 
-        # # Collect components and mole fractions
-        # for component_name, widget_set in self.component_widgets.items():
-        #     selected_component = widget_set["selector"].get()
-        #     try:
-        #         mole_fraction = float(widget_set["percentage"].get()) / 100
-        #     except ValueError:
-        #         mole_fraction = 0.0  # Handle invalid input
-        #     components.append(COMPONENTS.get(selected_component, selected_component))
-        #     mole_fractions.append(mole_fraction)
-
-            # Collect components and mole fractions
+        # Collect components and mole fractions
         for component_name, widget_set in self.component_widgets.items():
             selected_component = widget_set["selector"].get()
             try:
@@ -218,24 +208,33 @@ class GasCalculatorApp:
             except ValueError:
                 mole_fraction = 0.0  # Handle invalid input
 
-            # Make sure to add the correct component name to components list
+            # Add the correct component formula to the components list
             components.append(COMPONENTS.get(selected_component, selected_component))
             mole_fractions.append(mole_fraction)
 
         # Ensure mole fractions sum to 1
         if not np.isclose(sum(mole_fractions), 1.0, atol=1e-6):
-            CTkMessagebox(title="Input Error",
-                        message="Mole fractions must sum to 1.",
-                        icon="cancel")
+            CTkMessagebox(
+                title="Input Error",
+                message="Mole fractions must sum to 1.",
+                icon="cancel"
+            )
             return
+
+        # Retrieve constants
+        R = float(self.entries["constants"]["gas_constant"].get())  # Gas constant
+        T = float(self.entries["constants"]["temperature"].get())  # Temperature (K)
+        P = float(self.entries["constants"]["fill_pressure"].get())  # Pressure (bar)
+        V = float(self.entries["constants"]["cyl_volume"].get())  # Volume (L)
+
+        # Calculate total number of moles using the ideal gas law
+        total_moles = (P * V) / (R * T)
 
         # Calculate mixture properties (Tc, Pc, omega)
         T_crit_mix, P_crit_mix, omega_mix = self.calculate_mixture_props(components, mole_fractions)
 
+        # Calculate Z mix using the Pitzer correlation
         def calculate_Z_pitzer(P, T, T_crit, P_crit, omega_value):
-            """
-            Calculate Z using the Pitzer correlation.
-            """
             Tr = T / T_crit
             Pr = P / P_crit
 
@@ -245,30 +244,29 @@ class GasCalculatorApp:
 
             return 1 + B * (Pr / Tr)
 
-        # Calculate Z mix
-        R = float(self.entries["constants"]["gas_constant"].get())
-        T = float(self.entries["constants"]["temperature"].get())
-        P = float(self.entries["constants"]["fill_pressure"].get())  # Convert bar to Pa
-        # Z_mix = P * R * T / (P + omega_mix)  # Simplified Z equation
         Z_mix = calculate_Z_pitzer(P, T, T_crit_mix, P_crit_mix, omega_mix)
         self.entries["constants"]["z_mix"].delete(0, ctk.END)
         self.entries["constants"]["z_mix"].insert(0, f"{Z_mix:.4f}")
+
+        # Adjust total moles for compressibility factor
+        total_moles /= Z_mix
 
         # Update weight labels for each component
         total_weight = 0.0
         for component_name, widget_set in self.component_widgets.items():
             selected_component = widget_set["selector"].get()
-            molar_mass = Formula(COMPONENTS.get(selected_component)).mass
+            component_formula = COMPONENTS.get(selected_component, selected_component)  # Get the formula
+            molar_mass = Formula(component_formula).mass
             widget_set["molar_mass"].configure(text=f"{molar_mass:.4f} g/mol")
-            print(selected_component)
-            # Use mole_fractions dictionary for correct mole fraction
-            weight = mole_fractions[selected_component] * molar_mass
+
+            # Calculate the weight of the component
+            moles_component = total_moles * mole_fractions[components.index(component_formula)]
+            weight = moles_component * molar_mass
             widget_set["weight"].configure(text=f"{weight:.4f} g")
             total_weight += weight
 
         # Update the total weight display
         self.total_weight_label.configure(text=f"Total Weight: {total_weight:.4f} g")
-
 
 
 if __name__ == "__main__":
