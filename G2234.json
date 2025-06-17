@@ -1,0 +1,19 @@
+{
+    "constants": {
+        "cyl_volume": "40",
+        "fill_pressure": "150",
+        "gas_constant": "0.08314",
+        "temperature": "293",
+        "z_mix": "0.9098"
+    },
+    "components": [
+        {
+            "name": "OXYGEN",
+            "percentage": "40"
+        },
+        {
+            "name": "NITROGEN",
+            "percentage": "60"
+        }
+    ]
+}

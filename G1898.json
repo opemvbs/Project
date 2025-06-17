@@ -1,0 +1,19 @@
+{
+    "constants": {
+        "cyl_volume": "40",
+        "fill_pressure": "150",
+        "gas_constant": "0.08314",
+        "temperature": "293",
+        "z_mix": "0.7179"
+    },
+    "components": [
+        {
+            "name": "HYDROGEN SULPHIDE",
+            "percentage": "1"
+        },
+        {
+            "name": "METHANE",
+            "percentage": "99"
+        }
+    ]
+}

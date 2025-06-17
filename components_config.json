@@ -2,5 +2,7 @@
     "OXYGEN": "O2",
     "NITROGEN": "N2",
     "SULPHUR HEXAFLUORIDE": "SF6",
-    "ARGON": "Ar"
+    "ARGON": "Ar",
+    "HYDROGEN SULPHIDE": "H2S",
+    "METHANE": "CH4"
 }

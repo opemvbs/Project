@@ -5,6 +5,7 @@ from molmass import Formula
 from chemicals import Tc, Pc, omega, CAS_from_any
 import os
 import json
+import tkinter.filedialog as fd
 
 # Default constants
 DEFAULT_CONSTANTS = {
@@ -78,7 +79,14 @@ class GasCalculatorApp:
             self.root, text="Calculate", command=self.calculate
         ).grid(row=self.row - 1, column=self.col + 7, padx=10, pady=10)
 
-        # self.row += 1
+        ctk.CTkButton(
+            self.root, text="Save Mixture", command=self.save_mixture
+        ).grid(row=self.row - 1, column=self.col + 8, padx=10, pady=10)
+
+        ctk.CTkButton(
+            self.root, text="Load Mixture", command=self.load_mixture
+        ).grid(row=self.row - 1, column=self.col + 9, padx=10, pady=10)
+
         self.total_weight_label = ctk.CTkLabel(self.root, text="Total Weight: 0.0000 g")
         self.total_weight_label.grid(row=self.row, column=self.col + 6, padx=10, pady=5)
         self.row += 1
@@ -267,6 +275,55 @@ class GasCalculatorApp:
             total_weight += weight
 
         self.total_weight_label.configure(text=f"Total Weight: {total_weight:.4f} g")
+
+    def save_mixture(self):
+        """Save the current mixture (constants and components) to a JSON file."""
+        mixture = {
+            "constants": {k: self.entries["constants"][k].get() for k in self.entries["constants"]},
+            "components": []
+        }
+        for component_name, widget_set in self.component_widgets.items():
+            mixture["components"].append({
+                "name": widget_set["selector"].get(),
+                "percentage": widget_set["percentage"].get()
+            })
+        file_path = fd.asksaveasfilename(
+            defaultextension=".json",
+            filetypes=[("JSON files", "*.json")],
+            title="Save Gas Mixture"
+        )
+        if file_path:
+            with open(file_path, "w") as f:
+                json.dump(mixture, f, indent=4)
+            CTkMessagebox(title="Success", message="Mixture saved!", icon="check")
+
+    def load_mixture(self):
+        """Load a mixture from a JSON file and update the UI."""
+        file_path = fd.askopenfilename(
+            defaultextension=".json",
+            filetypes=[("JSON files", "*.json")],
+            title="Load Gas Mixture"
+        )
+        if not file_path:
+            return
+        with open(file_path, "r") as f:
+            mixture = json.load(f)
+        # Load constants
+        for k, v in mixture.get("constants", {}).items():
+            if k in self.entries["constants"]:
+                self.entries["constants"][k].delete(0, ctk.END)
+                self.entries["constants"][k].insert(0, v)
+        # Remove existing component rows
+        for comp in list(self.component_widgets.keys()):
+            self.delete_component(comp)
+        # Add loaded components
+        for comp in mixture.get("components", []):
+            name = comp["name"]
+            if name not in self.component_widgets:
+                self.add_component_widgets(name)
+            self.component_widgets[name]["selector"].set(name)
+            self.component_widgets[name]["percentage"].delete(0, ctk.END)
+            self.component_widgets[name]["percentage"].insert(0, comp["percentage"])
 
 if __name__ == "__main__":
     ctk.set_appearance_mode("dark")
